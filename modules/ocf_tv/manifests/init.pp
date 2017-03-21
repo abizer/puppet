@@ -16,6 +16,7 @@ class ocf_tv {
       'vlc',
       'x11vnc',
       'xinit',
+      'mopidy',
     ]:;
 
     # fonts
