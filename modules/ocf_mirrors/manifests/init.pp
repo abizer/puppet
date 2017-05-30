@@ -45,6 +45,10 @@ class ocf_mirrors {
       source => 'puppet:///modules/ocf_mirrors/README.html',
       owner  => mirrors,
       group  => mirrors;
+
+    '/usr/local/sbin/record-mirrors-stats':
+      source => 'puppet:///private/stats/record-mirrors-stats.py',
+      mode   => '0640';
   }
 
   class {
@@ -155,5 +159,13 @@ class ocf_mirrors {
     ssl_key   => "/etc/ssl/private/${::fqdn}.key",
     ssl_cert  => "/etc/ssl/private/${::fqdn}.crt",
     ssl_chain => '/etc/ssl/certs/incommon-intermediate.crt',
+  }
+
+  cron {
+    'mirrors-stats':
+      command => '/usr/local/sbin/record-mirrors-stats',
+      minute  => 0,
+      hour    => 0,
+      require => File['/usr/local/sbin/record-mirrors-stats'];
   }
 }
