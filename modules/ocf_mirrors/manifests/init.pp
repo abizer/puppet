@@ -33,6 +33,8 @@ class ocf_mirrors {
     password => '*',
   }
 
+  $ocfstats_password = hiera('ocfstats::mysql::password')
+
   file {
     ['/opt/mirrors', '/opt/mirrors/ftp', '/opt/mirrors/project']:
       ensure  => directory,
@@ -47,8 +49,8 @@ class ocf_mirrors {
       group  => mirrors;
 
     '/usr/local/sbin/record-mirrors-stats':
-      source => 'puppet:///private/stats/record-mirrors-stats.py',
-      mode   => '0640';
+      content => template('ocf_mirrors/record-mirrors-stats.py.erb'),
+      mode    => '0644';
   }
 
   class {
