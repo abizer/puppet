@@ -49,8 +49,8 @@ class ocf_mirrors {
       group  => mirrors;
 
     '/usr/local/sbin/record-mirrors-stats':
-      content => template('ocf_mirrors/record-mirrors-stats.py.erb'),
-      mode    => '0644';
+      source    => 'puppet:///modules/ocf_mirrors/record-mirrors-stats.py',
+      mode      => '0755';
   }
 
   class {
@@ -168,6 +168,7 @@ class ocf_mirrors {
       command => '/usr/local/sbin/record-mirrors-stats',
       minute  => 0,
       hour    => 0,
-      require => File['/usr/local/sbin/record-mirrors-stats'];
+      require => File['/usr/local/sbin/record-mirrors-stats'],
+      environment => ["OCFSTATS_PWD=${ocfstats_password}"];
   }
 }
