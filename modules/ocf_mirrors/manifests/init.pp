@@ -48,8 +48,8 @@ class ocf_mirrors {
       owner  => mirrors,
       group  => mirrors;
 
-    '/usr/local/sbin/record-mirrors-stats':
-      source    => 'puppet:///modules/ocf_mirrors/record-mirrors-stats.py',
+    '/usr/local/sbin/process-mirrors-logs':
+      source    => 'puppet:///modules/ocf_mirrors/process-mirrors-logs',
       mode      => '0755';
   }
 
@@ -165,10 +165,10 @@ class ocf_mirrors {
 
   cron {
     'mirrors-stats':
-      command => '/usr/local/sbin/record-mirrors-stats',
+      command => '/usr/local/sbin/process-mirrors-logs',
       minute  => 0,
       hour    => 0,
-      require => File['/usr/local/sbin/record-mirrors-stats'],
+      require => File['/usr/local/sbin/process-mirrors-logs'],
       environment => ["OCFSTATS_PWD=${ocfstats_password}"];
   }
 }
