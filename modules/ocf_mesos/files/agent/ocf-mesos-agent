@@ -1,0 +1,13 @@
+#!/bin/bash
+set -euo pipefail
+
+# Puppet creates this file when a reset is needed before the Mesos agent starts.
+RESET_SENTINEL='/var/lib/mesos-agent/reset-needed'
+
+if [ -f "$RESET_SENTINEL" ]; then
+    echo '[ocf-mesos-agent] resetting agent state...'
+    rm -rf /var/lib/mesos-agent/meta
+    rm -f "$RESET_SENTINEL"
+fi
+
+exec /usr/bin/mesos-init-wrapper slave

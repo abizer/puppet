@@ -1,6 +1,6 @@
 class ocf_mesos::secrets {
   # The way we manage secrets in Mesos is that we put them in the Puppet
-  # private share under "docker", which is made available to the Mesos slaves
+  # private share under "docker", which is made available to the Mesos agents
   # via a special file share, "private-docker".
   #
   # We then mount individual directories (e.g. for the RT service, we might
@@ -32,7 +32,7 @@ class ocf_mesos::secrets {
       force   => true;
   }
 
-  ocf_mesos::slave::attribute { 'secrets':
+  ocf_mesos::agent::attribute { 'secrets':
     value => 'true',  # lint:ignore:quoted_booleans
   }
 }

@@ -30,7 +30,7 @@ class ocf_mesos::master::mesos(
 
     [
       '/etc/mesos-master/authenticate',
-      '/etc/mesos-master/authenticate_slaves',
+      '/etc/mesos-master/authenticate_agents',
       '/etc/mesos-master/authenticate_http_readonly',
       '/etc/mesos-master/authenticate_http_readwrite',
     ]:
@@ -54,7 +54,7 @@ class ocf_mesos::master::mesos(
     mode      => '0400',
     show_diff => false,
     require   => Package['mesos'],
-    notify    => Service['mesos-slave'],
+    notify    => Service['mesos-agent'],
   } ->
   augeas { '/etc/default/mesos-master':
     lens    => 'Shellvars.lns',
