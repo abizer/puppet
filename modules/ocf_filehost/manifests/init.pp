@@ -1,34 +1,30 @@
 class ocf_filehost {
   package { ['quotatool', 'nfs-kernel-server']:; }
 
-  file { '/etc/exports':
-    source  => 'puppet:///modules/ocf_filehost/exports',
-    require => Package['nfs-kernel-server'],
+  $exports = join(['"',
+    join([
+      'admin(rw,fsid=0,no_subtree_check,no_root_squash)',
+      'www(rw,fsid=0,no_subtree_check,root_squash)',
+      'dev-www(rw,fsid=0,no_subtree_check,root_squash)',
+      'ssh(rw,fsid=0,no_subtree_check,no_root_squash)',
+      'dev-ssh(rw,fsid=0,no_subtree_check,no_root_squash)',
+      'apphost(rw,fsid=0,no_subtree_check,no_root_squash)',
+      'dev-apphost(rw,fsid=0,no_subtree_check,no_root_squash)',
+    ], ','),
+  '"'], '')
+
+  zfs { 'tank/homes':
+    ensure     => 'present',
+    canmount   => 'on',
+    mountpoint => '/home',
+    sharenfs   => $exports;
   }
 
-  augeas { '/etc/default/nfs-kernel-server':
-    lens    => 'Shellvars.lns',
-    incl    => '/etc/default/nfs-kernel-server',
-    changes => [
-      # Increase number of NFS threads.
-      'set RPCNFSDCOUNT 32',
-
-      # Decrease the grace period (time from server start until clients are
-      # allowed to start reading/writing files) from 90 seconds to 10 seconds.
-      #
-      # It's unlikely for us to have a 10+ second netsplit, so this is reasonably
-      # safe. This greatly reduces downtime during NFS restarts.
-      "set RPCNFSDOPTS '\"-G 10\"'",
-    ],
-    require => Package['nfs-kernel-server'],
-  } ~>
-  service {
-    # Make systemd re"compile" the NFS server config
-    'nfs-config':;
-  } ~>
-  service {
-    'nfs-server':
-      subscribe => File['/etc/exports'],
+  zfs { 'tank/services':
+    ensure     => 'present',
+    canmount   => 'on',
+    mountpoint => '/services',
+    sharenfs   => $exports;
   }
 
   include ocf::firewall::nfs
