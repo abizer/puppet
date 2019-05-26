@@ -97,6 +97,11 @@ class ocf::auth($glogin = [], $ulogin = [[]], $gsudo = [], $usudo = [], $nopassw
     refreshonly => true
   }
 
+  exec { 'pam-auth-update-mkhomedir':
+    command     => 'pam-auth-update --enable mkhomedir',
+    refreshonly => true;
+  }
+
   # PAM user/group access controls
   file {
     # create pam_access profile
@@ -112,7 +117,7 @@ class ocf::auth($glogin = [], $ulogin = [[]], $gsudo = [], $usudo = [], $nopassw
     # Create pam_mkhomedir profile
     '/usr/share/pam-configs/mkhomedir':
       source => 'puppet:///modules/ocf/auth/pam/mkhomedir',
-      notify => Exec['pam-auth-update'];
+      notify => Exec['pam-auth-update-mkhomedir'];
   }
 
   # Enable GSSAPI and root login, disable sorried forwarding
